@@ -46,19 +46,21 @@ def delete_city(city_id):
                 strict_slashes=False)
 def add_city(state_id):
     """Add a city to a state where it belongs"""
+    state = storage.get(State, state_id)
     try:
         data = request.get_json()
-        if not data:
-            abort(400)
         city = City()
         city.id = data.get('id', str(uuid.uuid4()))
-        city.name = data.get('name')
-        city.state_id = state_id
+        city.name = data['name']
+        city.state_id = state.id
         city.save()
         return make_response(jsonify(city.to_dict()), 201)
-
+    except KeyError:
+        abort(400, "Missing name")
     except AttributeError:
         abort(404)
+    except Exception:
+        abort(400, "Not a JSON")
 
 
 @app_views.put('/cities/<string:city_id>', strict_slashes=False)
@@ -67,11 +69,13 @@ def update_city(city_id):
     city = storage.get(City, city_id)
     try:
         data = request.get_json()
-        if not data:
-            abort(400)
-        if data.get('name') and type(data.get('name')) is str:
+        if data['name'] and type(data['name']) is str:
             city.name = data.get('name')
             city.save()
-        return make_response(jsonify(city.to_dict()), 201)
+            return make_response(jsonify(city.to_dict()), 201)
+    except KeyError:
+        abort(400, "Missing name")
     except AttributeError:
         abort(404)
+    except Exception:
+        abort(400, "Not a JSON")

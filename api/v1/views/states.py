@@ -40,34 +40,36 @@ def delete_State(state_id):
 
 
 @app_views.post('/states', strict_slashes=False)
-def add_state(state_id):
+def add_state():
     """Add a State to a state where it belongs"""
     try:
         data = request.get_json()
-        if not data:
-            abort(400)
         state = State()
         state.id = data.get('id', str(uuid.uuid4()))
-        state.name = data.get('name')
+        state.name = data['name']
         state.save()
         return make_response(jsonify(state.to_dict()), 201)
 
-    except AttributeError:
-        abort(404)
+    except KeyError:
+        abort(400, "Missing name")
+    except Exception:
+        abort(400, "Not a JSON")
 
 
 @app_views.put('/states/<string:state_id>', strict_slashes=False)
-def update_State(state_id):
+def update_state(state_id):
     """Update state with new input"""
     state = storage.get(State, state_id)
     try:
         data = request.get_json()
-        if not data:
-            abort(400)
-        if data.get('name') and type(data.get('name')) is str:
+        if data['name'] and type(data['name']) is str:
             state.name = data.get('name')
             state.save()
         return make_response(jsonify(state.to_dict()), 201)
 
+    except KeyError:
+        abort(400, "Missing name")
     except AttributeError:
         abort(404)
+    except Exception:
+        abort(400, "Not a JSON")

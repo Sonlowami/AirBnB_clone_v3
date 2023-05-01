@@ -38,6 +38,7 @@ def delete_city(city_id):
     if not city:
         abort(404)
     storage.delete(city)
+    storage.save()
     return make_response(jsonify({}), 200)
 
 
@@ -48,7 +49,7 @@ def add_city(state_id):
     try:
         data = request.get_json()
         if not data:
-            raise TypeError
+            abort(400)
         city = City()
         city.id = data.get('id', str(uuid.uuid4()))
         city.name = data.get('name')
@@ -58,8 +59,6 @@ def add_city(state_id):
 
     except AttributeError:
         abort(404)
-    except TypeError:
-        return make_response(jsonify({'error': 'Not a JSON'}), 400)
 
 
 @app_views.put('/cities/<string:city_id>', strict_slashes=False)
@@ -69,13 +68,10 @@ def update_city(city_id):
     try:
         data = request.get_json()
         if not data:
-            raise TypeError
+            abort(400)
         if data.get('name') and type(data.get('name')) is str:
             city.name = data.get('name')
             city.save()
         return make_response(jsonify(city.to_dict()), 201)
-
-    except TypeError:
-        return make_response(jsonify({'error': 'Not a JSON'}), 400)
     except AttributeError:
         abort(404)

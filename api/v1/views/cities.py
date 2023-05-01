@@ -33,6 +33,7 @@ def get_city(city_id):
 
 @app_views.delete('/cities/<string:city_id>', strict_slashes=False)
 def delete_city(city_id):
+    """Delete city from the the database"""
     city = storage.get(City, city_id)
     if not city:
         abort(404)

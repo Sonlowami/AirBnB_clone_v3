@@ -7,7 +7,7 @@ from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
 
 
-@app_views.get('/users', strict_slashes=False)
+@app_views.route('/users', strict_slashes=False)
 def get_users():
     """Retrieve all users in memory"""
     users = storage.all(User)
@@ -17,8 +17,8 @@ def get_users():
     return jsonify(users_list)
 
 
-@app_views.get('/users/<string:user_id>',
-               strict_slashes=False)
+@app_views.route('/users/<string:user_id>',
+                 strict_slashes=False)
 def get_user(user_id):
     """Get a User given it's ID"""
     user = storage.get(User, user_id)
@@ -28,7 +28,8 @@ def get_user(user_id):
         abort(404)
 
 
-@app_views.delete('/users/<string:user_id>', strict_slashes=False)
+@app_views.route('/users/<string:user_id>', methods=['DELETE'],
+                 strict_slashes=False)
 def delete_User(user_id):
     """Delete user from the the database"""
     user = storage.get(User, user_id)
@@ -39,7 +40,7 @@ def delete_User(user_id):
     return make_response(jsonify({}), 200)
 
 
-@app_views.post('/users', strict_slashes=False)
+@app_views.route('/users', methods=['POST'], strict_slashes=False)
 def add_user():
     """Add a User to a user where it belongs"""
     try:
@@ -61,7 +62,8 @@ def add_user():
         abort(400, "Not a JSON")
 
 
-@app_views.put('/users/<string:user_id>', strict_slashes=False)
+@app_views.route('/users/<string:user_id>', methods=['PUT'],
+                 strict_slashes=False)
 def update_user(user_id):
     """Update user with new input"""
     user = storage.get(User, user_id)

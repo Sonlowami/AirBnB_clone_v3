@@ -8,8 +8,8 @@ from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
 
 
-@app_views.get('/places/<string:place_id>/reviews',
-               strict_slashes=False)
+@app_views.route('/places/<string:place_id>/reviews',
+                 strict_slashes=False)
 def get_reviews_by_place(place_id):
     """Get all reviews for a certain place"""
     place = storage.get(Place, place_id)
@@ -20,8 +20,8 @@ def get_reviews_by_place(place_id):
         abort(404)
 
 
-@app_views.get('/reviews/<string:review_id>',
-               strict_slashes=False)
+@app_views.route('/reviews/<string:review_id>',
+                 strict_slashes=False)
 def get_review(review_id):
     """Get a review given it's ID"""
     review = storage.get(Review, review_id)
@@ -31,7 +31,8 @@ def get_review(review_id):
         abort(404)
 
 
-@app_views.delete('/reviews/<string:review_id>', strict_slashes=False)
+@app_views.route('/reviews/<string:review_id>', methods=['DELETE'],
+                 strict_slashes=False)
 def delete_review(review_id):
     """Delete review from the the database"""
     review = storage.get(Review, review_id)
@@ -42,8 +43,8 @@ def delete_review(review_id):
     return make_response(jsonify({}), 200)
 
 
-@app_views.post('/places/<string:place_id>/reviews',
-                strict_slashes=False)
+@app_views.route('/places/<string:place_id>/reviews', methods=['POST'],
+                 strict_slashes=False)
 def add_review(place_id):
     """Add a review to a place"""
     place = storage.get(Place, place_id)
@@ -66,7 +67,8 @@ def add_review(place_id):
         abort(400, "Not a JSON")
 
 
-@app_views.put('/reviews/<string:review_id>', strict_slashes=False)
+@app_views.route('/reviews/<string:review_id>', methods=['PUT'],
+                 strict_slashes=False)
 def update_review(review_id):
     """Update review with new input"""
     review = storage.get(Review, review_id)

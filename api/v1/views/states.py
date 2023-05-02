@@ -53,7 +53,7 @@ def add_state():
 
     except KeyError:
         abort(400, "Missing name")
-    except Exception:
+    except Exception as e:
         abort(400, "Not a JSON")
 
 

@@ -7,7 +7,7 @@ from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
 
 
-@app_views.get('/states', strict_slashes=False)
+@app_views.route('/states', strict_slashes=False)
 def get_states():
     """Retrieve all states in memory"""
     states = storage.all(State)
@@ -17,7 +17,7 @@ def get_states():
     return jsonify(states_dict)
 
 
-@app_views.get('/states/<string:state_id>',
+@app_views.route('/states/<string:state_id>',
                strict_slashes=False)
 def get_state(state_id):
     """Get a State given it's ID"""
@@ -28,7 +28,7 @@ def get_state(state_id):
         abort(404)
 
 
-@app_views.delete('/states/<string:state_id>', strict_slashes=False)
+@app_views.route('/states/<string:state_id>', strict_slashes=False)
 def delete_State(state_id):
     """Delete state from the the database"""
     state = storage.get(State, state_id)
@@ -39,7 +39,7 @@ def delete_State(state_id):
     return make_response(jsonify({}), 200)
 
 
-@app_views.post('/states', strict_slashes=False)
+@app_views.route('/states', strict_slashes=False)
 def add_state():
     """Add a State to a state where it belongs"""
     try:
@@ -55,8 +55,7 @@ def add_state():
     except Exception:
         abort(400, "Not a JSON")
 
-
-@app_views.put('/states/<string:state_id>', strict_slashes=False)
+@app_views.route('/states/<string:state_id>', strict_slashes=False)
 def update_state(state_id):
     """Update state with new input"""
     state = storage.get(State, state_id)

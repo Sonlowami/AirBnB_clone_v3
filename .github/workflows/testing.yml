@@ -2,6 +2,9 @@
 name: testing
 # Create git actions
 on:
+# Allow to manually run workflow actions
+  workflow_dispatch:
+# Listen for a push event and trigger an action
   push: 
     branches: [ master ]
 # Define jobs

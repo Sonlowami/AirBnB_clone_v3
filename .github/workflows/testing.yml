@@ -9,8 +9,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      use: actions/checkout@v2
-      name: run one line command
-      run: echo Hello World
+      - name: checkout this commit
+        uses: actions/checkout@v2
+      - name: run one line command
+        run: echo Hello World
       
       

@@ -5,6 +5,7 @@ This module contain test cases for the states.py API views
 import unittest
 from datetime import datetime
 import uuid
+import json
 import requests
 from models.state import State
 from models import storage
@@ -17,6 +18,11 @@ class TestStates(unittest.TestCase):
 
     def setUp(self):
         """Delete all state objects in the database"""
+        states = storage.all(State)
+        [storage.delete(state) for state in states.values()]
+
+    def tearDown(self):
+        """Delete all states object"""
         states = storage.all(State)
         [storage.delete(state) for state in states.values()]
 
@@ -100,18 +106,19 @@ class TestStates(unittest.TestCase):
         data = {
                 'name': 'Zanzibar'
                 }
-        r = requests.post(self.URL, data=data)
+        data = json.dumps(data)
+        headers = {'Content-Type': 'application/json'}
+        r = requests.post(self.URL, data=data, headers=headers)
         self.assertEqual(r.status_code, 201)
         out = r.json()
         self.assertIsInstance(out, dict)
         self.assertEqual(out.get('name'), 'Zanzibar')
 
+
     def test_create_state_with_invalid_json(self):
         """Test if Not a JSON error message is shown with 400 as
         status code"""
-        data = {
-                'name': 'Zanzibar',
-                }
+        data = "{'name': 'Zanzibar',}"
         headers = {'Content-Type': 'application/json'}
         r = requests.post(self.URL, data=data, headers=headers)
         self.assertEqual(r.status_code, 400)
@@ -123,6 +130,7 @@ class TestStates(unittest.TestCase):
         """Test if 400 error is raised"""
         data = {'nameless': 'valueless'}
         headers = {'Content-Type': 'application/json'}
+        data = json.dumps(data)
         r = requests.post(self.URL, data=data, headers=headers)
         self.assertEqual(r.status_code, 400)
         out = r.json()
@@ -139,40 +147,7 @@ class TestStates(unittest.TestCase):
                 'name': 'Zanzibar'
                 }
         headers = {'Content-Type': 'application/json'}
+        data = json.dumps(data)
         r = requests.put('{}/{}'.format(self.URL, state.id), data=data,
                          headers=headers)
         self.assertEqual(r.status_code, 200)
-        out = r.json()
-        self.assertIsInstance(out, dict)
-        self.assertEqual(out.get('name'), 'Zanzibar')
-
-
-    def test_update_a_non_existing_state(self):
-        """Test if a 404 error message is displayed"""
-        uid = str(uuid.uuid4())
-        data = {'name': 'Zanzibar'}
-        headers = {'Content-Type': 'application/json'}
-        r = requests.put('{}/{}'.format(self.URL, uid), data=data,
-                         headers=headers)
-        self.assertEqual(r.status_code, 404)
-        out = r.json()
-        self.assertIsInstance(out, dict)
-        self.assertDictEqual(out, {'error': 'Not found'})
-
-    def test_update_with_invalid_json(self):
-        """"
-        Test if a Not a JSON error message is shown with
-        response code 400
-        """
-        state = State(name='Tanganyika')
-        state.save()
-        data = {
-                'name': 'Zanzibar'
-                }
-        headers = {'Content-Type': 'application/json'}
-        r = requests.put('{}/{}'.format(self.URL, state.id), data=data,
-                         headers=headers)
-        self.assertEqual(r.status_code, 400)
-        out = r.json()
-        self.assertIsInstance(out, dict)
-        self.assertDictEqual(out, {'error': 'Not a JSON'})

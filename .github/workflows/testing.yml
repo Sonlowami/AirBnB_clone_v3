@@ -1,0 +1,16 @@
+# This is a basic workflow for getting started with Actions
+name: testing
+# Create git actions
+on:
+  push: 
+    branches: [ master ]
+# Define jobs
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      use: actions/checkout@v2
+      name: run one line command
+      run: echo Hello World
+      
+      
